@@ -9,7 +9,7 @@ router.register("authentication",registerUser)
 
 urlpatterns = [
     path('index/',index , name = "index"),
-    url(r'^userList/', registerUser.as_view()),
+    url(r'^registerUser/', registerUser.as_view()),
     url(r'^deleteUser/', deleteUser.as_view()),
     url(r'^signIn/', SignIn.as_view()),
     url(r'^changePassword/', changePassword.as_view()),

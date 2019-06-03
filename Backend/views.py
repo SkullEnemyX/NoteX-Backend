@@ -16,23 +16,19 @@ class registerUser(APIView):
     serializer_class = AuthSerializer
     '''Primary class for the purpose to register the user on the database. This specific class deals with adding the username and password on the Authentication
     collection. Password should be encrypted by using suitable encrypting algorithm like SSH256 before saving the value.'''
-
-    def get(self,request):
-        
-        userList = Authentication.objects.all()
-        serializer = AuthSerializer(userList,many=True)
-        return Response(serializer.data)
     def post(self,request):
-
-        auth = Authentication()
-        if set(Authentication.objects.filter(username = request.GET['username'])) == set(Authentication.objects.none()):
+        authUser = Authentication.objects.filter(username = request.GET['username'])
+        authEmail = Authentication.objects.filter(username = request.GET['email'])
+        if(set(authUser) == set(Authentication.objects.none()) and set(authEmail)==set(Authentication.objects.none())):
+            auth = Authentication()
             auth.username = request.GET['username']
             auth.password = request.GET['password']
+            auth.name = request.GET['name']
+            auth.email =request.GET['email']
             auth.save()
-            return Response(data = "Done")
+            return HttpResponse("success")
         else:
-            print("hello")
-            return Response(data = "exists", status=200)
+            return HttpResponse("exist")
 
 class changePassword(APIView):
     queryset = Authentication.objects.all()
@@ -77,7 +73,10 @@ class deleteUser(APIView):
 
     def post(self,request):
 
-        Authentication.objects.filter(id = request.GET['id']).delete()
+        Auth = Authentication.objects.get(username = request.GET['username'])
+        Auth.delete()
+        Auth.save()
+        print("User's account removed")
         return HttpResponse("User's account removed")  
 
 class SignIn(APIView):
@@ -88,9 +87,9 @@ class SignIn(APIView):
 
     def post(self,request):
         if request.GET['password'] == Authentication.objects.get(username = request.GET['username']).password:
-            return HttpResponse("Signin Successful")
+            return HttpResponse("success") 
         else:
-            return HttpResponse("Invalid Username or Password")
+            return HttpResponse("invalid")
 
 '''--------------------------------------------------- Defining class for notes application-----------------------------------------------------------------'''
 

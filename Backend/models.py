@@ -1,6 +1,5 @@
 import datetime
 from djongo import models
-from django import forms
 
 class Authentication(models.Model):
     username = models.CharField(max_length = 100)

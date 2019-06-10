@@ -90,6 +90,21 @@ class SignIn(APIView):
             return HttpResponse("success") 
         else:
             return HttpResponse("invalid")
+    
+class fetchInfo(APIView):
+    queryset = Authentication.objects.all()
+    serializer_class = AuthSerializer
+
+    def post(self,request):
+        if request.GET['password'] == Authentication.objects.get(username = request.GET['username']).password:
+            if request.GET['email']!="":
+                return HttpResponse(str(Authentication.objects.get(username = request.GET['username']).email))
+            elif request.GET['name']!="":
+                return HttpResponse(str(Authentication.objects.get(username = request.GET['username']).name))
+            else:
+                return HttpResponse("invalid query")
+        else:
+            return HttpResponse("invalid credentials")
 
 '''--------------------------------------------------- Defining class for notes application-----------------------------------------------------------------'''
 

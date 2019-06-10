@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^changePassword/', changePassword.as_view()),
     url(r'^viewNotes/', viewNotes.as_view()),
     url(r'^makeNotes/', makeNotes.as_view()),
+    url(r'^fetchInfo/', makeNotes.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

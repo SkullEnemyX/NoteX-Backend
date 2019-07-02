@@ -1,5 +1,5 @@
 from django.urls import path , include
-from .views import index,registerUser,changePassword,deleteUser,SignIn,viewNotes,makeNotes,fetchInfo
+from .views import *
 from rest_framework import routers
 from django.conf.urls import url
 from rest_framework.urlpatterns import format_suffix_patterns
@@ -16,6 +16,7 @@ urlpatterns = [
     url(r'^viewNotes/', viewNotes.as_view()),
     url(r'^makeNotes/', makeNotes.as_view()),
     url(r'^fetchInfo/', fetchInfo.as_view()),
+    url(r'^modifyNote/', modifyNote.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

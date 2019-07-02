@@ -7,6 +7,7 @@ from .models import Authentication,NoteApp,Notes
 from rest_framework.views import APIView
 from .serializer import AuthSerializer,NoteSerializer
 import copy
+import json
 # Create your views here.
 def index(request):
     return HttpResponse("Jai Shri Ram")
@@ -111,33 +112,58 @@ class viewNotes(APIView):
     queryset = NoteApp.objects.all()
     serializer_class = NoteSerializer
 
-    def get(self,request):
+    def post(self,request):
         
-        notesDesc = NoteApp.objects.get(username = request.GET["username"]).notesDesc
-        notesTitle = NoteApp.objects.get(username = request.GET["username"]).notesTitle
-        return HttpResponse(notesTitle+"#######"+notesDesc)
+        if(NoteApp.objects.filter(username = request.GET["username"]).exists()):
+            noteVar = NoteApp.objects.get(username = request.GET["username"])
+            note = noteVar.notesApp
+            l = []
+            for i in range(len(note)):
+                l.append({"notesTitle": note[i].notesTitle,"notesDesc":note[i].notesDesc})
+            l.reverse()
+            return HttpResponse(json.dumps(l))
+        else:
+            return HttpResponse("fail")
 
 class makeNotes(APIView):
     queryset = NoteApp.objects.all()
     serializer = NoteSerializer
 
     def post(self,request):
-        if request.GET["password"] == Authentication.objects.get(username = request.GET['username']).password:
-            if(NoteApp.objects.filter(username = request.GET["username"]).exists()):
-                noteVar = NoteApp.objects.get(username = request.GET['username'])
-            else:
-                noteVar = NoteApp()
-                noteVar.username = request.GET["username"]
-            note = noteVar.notesApp
-            obj = Notes()
-            obj.notesTitle = request.GET["notesTitle"]
-            obj.notesDesc = request.GET["notesDesc"]
-            note.append(obj)
-            noteVar.save()
-            return HttpResponse("Notes saved successfully")
+        if(NoteApp.objects.filter(username = request.GET["username"]).exists()):
+            noteVar = NoteApp.objects.get(username = request.GET['username'])
         else:
-            return HttpResponse("Unable to authorize the user")
+            noteVar = NoteApp()
+            noteVar.username = request.GET["username"]
+        note = noteVar.notesApp
+        obj = Notes()
+        obj.notesTitle = request.GET["notesTitle"]
+        obj.notesDesc = request.GET["notesDesc"]
+        note.append(obj)
+        noteVar.save()
+        return HttpResponse("success")
         
+class modifyNote(APIView):
+    queryset = NoteApp.objects.all()
+    serializer = NoteSerializer
+
+    def post(self,request):
+        if(NoteApp.objects.filter(username = request.GET["username"]).exists()):
+            noteVar = NoteApp.objects.get(username = request.GET["username"])
+            note = noteVar.notesApp
+            note.reverse()
+            index = int(request.GET["index"])
+            if(index>=len(note)):
+                return HttpResponse("fail")
+            else:
+                note[index].notesTitle = request.GET["notesTitle"]
+                note[index].notesDesc = request.GET["notesDesc"]
+                note.reverse()
+                noteVar.save()
+                return HttpResponse("modified")
+        else:
+            return HttpResponse("fail")
+
 
 
             

@@ -5,28 +5,30 @@ class Authentication(models.Model):
     username = models.CharField(max_length = 100)
     objects = models.Manager()
     password = models.CharField(max_length = 100)
-    name = models.CharField(max_length = 100,null = True)
+    name = models.CharField(max_length = 100,default = "user")
     email = models.EmailField(null = True)
 
     def __str__(self):
         return self.username
     
 class Notes(models.Model):
-    notesTitle = models.CharField(max_length = 100)
-    notesDesc = models.TextField()
-    objects = models.Manager()
+    notesTitle = models.CharField(max_length = 100,default = " ")
+    notesDesc = models.TextField(default = " ")
     class Meta:
         abstract = True
 
-class NoteApp(models.Model):
+# class NoteForm(forms.ModelForm):
+#     class Meta:
+#         model = Notes
+#         fields = ['notesTitle','notesDesc']
 
-    objects = models.Manager()
-    username =  models.CharField(max_length=100)
+class NoteApp(models.Model):
+    username =  models.CharField(max_length=100,primary_key=True)
     notesApp = models.ArrayModelField(
         model_container= Notes,
-        default = [],
-        
+        default = []
     )
+    objects = models.DjongoManager()
 
     def __str__(self):
         return self.username

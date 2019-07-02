@@ -96,11 +96,10 @@ class fetchInfo(APIView):
     serializer_class = AuthSerializer
 
     def post(self,request):
+        print(str(Authentication.objects.get(username = request.GET['username']).name))
         if request.GET['password'] == Authentication.objects.get(username = request.GET['username']).password:
-            if request.GET['email']!="":
-                return HttpResponse(str(Authentication.objects.get(username = request.GET['username']).email))
-            elif request.GET['name']!="":
-                return HttpResponse(str(Authentication.objects.get(username = request.GET['username']).name))
+            if request.GET['email']!="" and request.GET['name']!="":
+                return HttpResponse(Authentication.objects.get(username = request.GET['username']).email+"/"+Authentication.objects.get(username = request.GET['username']).name)
             else:
                 return HttpResponse("invalid query")
         else:
@@ -114,9 +113,9 @@ class viewNotes(APIView):
 
     def get(self,request):
         
-        notesList = NoteApp.objects.all()
-        serializer = NoteSerializer(notesList,many=True)
-        return Response(serializer.data)
+        notesDesc = NoteApp.objects.get(username = request.GET["username"]).notesDesc
+        notesTitle = NoteApp.objects.get(username = request.GET["username"]).notesTitle
+        return HttpResponse(notesTitle+"#######"+notesDesc)
 
 class makeNotes(APIView):
     queryset = NoteApp.objects.all()
@@ -124,7 +123,11 @@ class makeNotes(APIView):
 
     def post(self,request):
         if request.GET["password"] == Authentication.objects.get(username = request.GET['username']).password:
-            noteVar = NoteApp.objects.get(username = request.GET['username'])
+            if(NoteApp.objects.filter(username = request.GET["username"]).exists()):
+                noteVar = NoteApp.objects.get(username = request.GET['username'])
+            else:
+                noteVar = NoteApp()
+                noteVar.username = request.GET["username"]
             note = noteVar.notesApp
             obj = Notes()
             obj.notesTitle = request.GET["notesTitle"]

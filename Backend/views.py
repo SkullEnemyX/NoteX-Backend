@@ -153,14 +153,23 @@ class modifyNote(APIView):
             note = noteVar.notesApp
             note.reverse()
             index = int(request.GET["index"])
-            if(index>=len(note)):
-                return HttpResponse("fail")
-            else:
-                note[index].notesTitle = request.GET["notesTitle"]
-                note[index].notesDesc = request.GET["notesDesc"]
-                note.reverse()
-                noteVar.save()
-                return HttpResponse("modified")
+            if(request.GET["action"]=="modify"):
+                if(index>=len(note)):
+                    return HttpResponse("fail")
+                else:
+                    note[index].notesTitle = request.GET["notesTitle"]
+                    note[index].notesDesc = request.GET["notesDesc"]
+                    note.reverse()
+                    noteVar.save()
+                    return HttpResponse("modified")
+            elif(request.GET["action"]=="delete"):
+                if(index>=len(note)):
+                    return HttpResponse("fail")
+                else:
+                    note.pop(index)
+                    note.reverse()
+                    noteVar.save()
+                    return HttpResponse("deleted")
         else:
             return HttpResponse("fail")
 
